@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY Scientific Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #121212, #323232);
+            color: #fff;
+        }
+
+        .calculator {
+            width: 400px;
+            background: rgba(50, 50, 50, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .display {
+            width: 100%;
+            height: 60px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            color: #00ffcc;
+            text-align: right;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .button {
+            height: 60px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(145deg, #252525, #353535);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 255, 204, 0.2);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.5), 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+
+        .button .ripple {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 204, 0.5);
+            top: 0;
+            left: 0;
+            transform: scale(0);
+            opacity: 0.7;
+            border-radius: 50%;
+            animation: ripple-effect 0.6s ease-out;
+        }
+
+        @keyframes ripple-effect {
+            from {
+                transform: scale(0);
+                opacity: 0.7;
+            }
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .button.clear {
+            background: linear-gradient(145deg, #b30000, #ff1a1a);
+            box-shadow: 0 4px 15px rgba(255, 26, 26, 0.5), inset 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .button.equals {
+            grid-column: span 5;
+            background: linear-gradient(145deg, #009933, #00cc44);
+            box-shadow: 0 4px 15px rgba(0, 204, 68, 0.5), inset 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" class="display" placeholder="0" disabled>
+        <div class="buttons">
+            <button class="button" onclick="buttonClick(event, '7')">7</button>
+            <button class="button" onclick="buttonClick(event, '8')">8</button>
+            <button class="button" onclick="buttonClick(event, '9')">9</button>
+            <button class="button" onclick="buttonClick(event, '/')">÷</button>
+            <button class="button" onclick="buttonClick(event, 'sin')">sin</button>
+
+            <button class="button" onclick="buttonClick(event, '4')">4</button>
+            <button class="button" onclick="buttonClick(event, '5')">5</button>
+            <button class="button" onclick="buttonClick(event, '6')">6</button>
+            <button class="button" onclick="buttonClick(event, '*')">×</button>
+            <button class="button" onclick="buttonClick(event, 'cos')">cos</button>
+
+            <button class="button" onclick="buttonClick(event, '1')">1</button>
+            <button class="button" onclick="buttonClick(event, '2')">2</button>
+            <button class="button" onclick="buttonClick(event, '3')">3</button>
+            <button class="button" onclick="buttonClick(event, '-')">−</button>
+            <button class="button" onclick="buttonClick(event, 'tan')">tan</button>
+
+            <button class="button" onclick="buttonClick(event, '0')">0</button>
+            <button class="button" onclick="buttonClick(event, '.')">.</button>
+            <button class="button clear" onclick="clearDisplay()">C</button>
+            <button class="button" onclick="buttonClick(event, '+')">+</button>
+            <button class="button" onclick="buttonClick(event, 'sqrt')">√</button>
+
+            <button class="button" onclick="buttonClick(event, '(')">(</button>
+            <button class="button" onclick="buttonClick(event, ')')">)</button>
+            <button class="button" onclick="buttonClick(event, '%')">%</button>
+            <button class="button" onclick="buttonClick(event, '**')">^</button>
+            <button class="button" onclick="buttonClick(event, 'log')">log</button>
+
+            <button class="button equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+    
+        function buttonClick(event, value) {
+            if (['sin', 'cos', 'tan', 'sqrt', 'log'].includes(value)) {
+                // Directly append the function name (no parentheses)
+                display.value += value + '(';
+            } else {
+                append(value);
+            }
+    
+            const button = event.currentTarget;
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            button.appendChild(ripple);
+    
+            ripple.addEventListener('animationend', () => {
+                ripple.remove();
+            });
+        }
+    
+        function append(value) {
+            display.value += value;
+        }
+    
+        function clearDisplay() {
+            display.value = '';
+        }
+    
+        function calculate() {
+            try {
+                let formattedInput = display.value
+                    .replaceAll('÷', '/')
+                    .replaceAll('×', '*')
+                    .replace(/sin\(/g, 'Math.sin(')
+                    .replace(/cos\(/g, 'Math.cos(')
+                    .replace(/tan\(/g, 'Math.tan(')
+                    .replace(/sqrt\(/g, 'Math.sqrt(')
+                    .replace(/log\(/g, 'Math.log10(');
+                
+                display.value = eval(formattedInput);
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
